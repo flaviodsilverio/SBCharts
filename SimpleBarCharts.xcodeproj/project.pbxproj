@@ -14,6 +14,7 @@
 		1B58C6651B64D8D8000F498C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1B58C6641B64D8D8000F498C /* Images.xcassets */; };
 		1B58C6681B64D8D8000F498C /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1B58C6661B64D8D8000F498C /* LaunchScreen.xib */; };
 		1B58C6741B64D8D8000F498C /* SimpleBarChartsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B58C6731B64D8D8000F498C /* SimpleBarChartsTests.m */; };
+		1B58C67F1B64D903000F498C /* SBChart.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B58C67E1B64D903000F498C /* SBChart.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,8 @@
 		1B58C66D1B64D8D8000F498C /* SimpleBarChartsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SimpleBarChartsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B58C6721B64D8D8000F498C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1B58C6731B64D8D8000F498C /* SimpleBarChartsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SimpleBarChartsTests.m; sourceTree = "<group>"; };
+		1B58C67D1B64D903000F498C /* SBChart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBChart.h; sourceTree = "<group>"; };
+		1B58C67E1B64D903000F498C /* SBChart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBChart.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +92,8 @@
 				1B58C6641B64D8D8000F498C /* Images.xcassets */,
 				1B58C6661B64D8D8000F498C /* LaunchScreen.xib */,
 				1B58C6571B64D8D8000F498C /* Supporting Files */,
+				1B58C67D1B64D903000F498C /* SBChart.h */,
+				1B58C67E1B64D903000F498C /* SBChart.m */,
 			);
 			path = SimpleBarCharts;
 			sourceTree = "<group>";
@@ -222,6 +227,7 @@
 				1B58C6601B64D8D8000F498C /* ViewController.m in Sources */,
 				1B58C65D1B64D8D8000F498C /* AppDelegate.m in Sources */,
 				1B58C65A1B64D8D8000F498C /* main.m in Sources */,
+				1B58C67F1B64D903000F498C /* SBChart.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
