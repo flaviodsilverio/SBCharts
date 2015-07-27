@@ -29,12 +29,14 @@ typedef enum GraphStyle
 @interface SBChart : UIView
 {
     GraphStyle graphStyle;
+    NSMutableArray *yValues;
     NSArray *bottomLabels;
     NSMutableArray *data;
     UIView *graphView;
     UIView *bottomView;
     UIView *leftView;
-
+    double barSpacing;
+    double multiplier;
 }
 
 @property (weak) id <SBChartDelegate> delegate; 

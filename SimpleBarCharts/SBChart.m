@@ -15,14 +15,14 @@
 
     self = [super initWithFrame:frame];
     bottomLabels = labels;
-    [self subdivideViews];
-    
+    yValues = [[NSMutableArray alloc] init];
+
     data = [[NSMutableArray alloc] init];
     [self normalizeData:values];
     
-    graphStyle = STYLE_BOTTOM_AND_SIDE_AXIS;
+    graphStyle = STYLE_ONLY_BARS;
     //graphStyle = &style;
-    
+    barSpacing = 8.0;
     [self configureView];
     
     
@@ -62,12 +62,46 @@
     
     
     leftView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 50, self.frame.size.height-50)];
+    
     [self addSubview:leftView];
     
     graphView = [[UIView alloc] initWithFrame:CGRectMake(50, 0, self.frame.size.width - 50, self.frame.size.height - 50)];
     [self addSubview:graphView];
     
     
+}
+
+- (void) generateYValues:(float)max{
+
+    float auxMultiplier = 1;
+    int auxMax = max;
+    float aux = 1;
+    
+    while (auxMax > 10) {
+        auxMax /= 10;
+        auxMultiplier++;
+    }
+    aux = auxMax;
+    
+    for (int i = 1; i < auxMultiplier ; i++) {
+        auxMax *= 10;
+    }
+    
+    if((float)auxMax < max){
+        auxMax = ++aux;
+        for (int i = 1; i < auxMultiplier; i++) {
+            auxMax *= 10;
+        }
+        multiplier = max/auxMax;
+    } else {
+        auxMax = max;
+        multiplier = 1;
+    }
+    
+    for (float i = 5;  i > 0; i--) {
+        [yValues addObject:[NSNumber numberWithInt:auxMax*(i/5)]];
+    }
+    NSLog(@"%@",yValues);
 }
 
 - (void) generateLabels:(UIView *)view isLeftView:(BOOL)leftView isBottomView:(BOOL)bottomView{
@@ -97,70 +131,90 @@
     NSNumber *max = [[NSNumber alloc] initWithInt:0];
     
     //Here we find the Max of all the values that are being sent over
-    for (NSArray *v in values) {
+    //Check for the type that is being processed
+    
+    for (NSObject *o in values) {
         
-        for (NSNumber *f in v) {
-            
-            (f > max) ? max = f : 0;
-            
+        if([[o class] isSubclassOfClass:[NSArray class]]){
+            for (NSNumber *f in (NSArray *) o ) {
+                
+                if([f floatValue] > [max floatValue]){
+                    max = f;
+                }
+            }
+        } else if([[o class] isSubclassOfClass:[NSNumber class]]){
+            if([(NSNumber *)o floatValue] > [max floatValue]){
+                max = (NSNumber *) o;
+            }
         }
         
     }
     
-    for (NSArray *v in values) {
+    [self generateYValues:[max floatValue]];
+    
+    for (NSObject *o in values) {
         
-        NSMutableArray *percentages = [[NSMutableArray alloc] init];
         
-        for (NSNumber *f in v) {
+        //if you only use simple graphs (eg.: one bar graphs) it will never come here
+        if([[o class] isSubclassOfClass:[NSArray class]]){
             
-            NSNumber *percentage = [[NSNumber alloc] initWithFloat: [f floatValue]/[max floatValue]];
-            [percentages addObject:percentage];
+            NSMutableArray *p = [[NSMutableArray alloc] init];
+            
+            for (NSNumber *f in (NSArray *) o ) {
+                
+                NSNumber *percentage = [[NSNumber alloc] initWithFloat: [f floatValue]/[max floatValue]];
+                [p addObject:percentage];
+            }
+            
+            [data addObject:(NSArray *) p ];
+            
+        } else if([[o class] isSubclassOfClass:[NSNumber class]]){
+            //This is where the one line graphs are changed
+            NSNumber *percentage = [[NSNumber alloc] initWithFloat: [(NSNumber *) o floatValue]/[max floatValue]];
+            [data addObject:percentage];
         }
-        
-        [data addObject:percentages];
-        
+                
     }
 
 }
 
 - (void) drawGraph{
 
-    float biggerArray = 0.0;
     
-    for (NSArray *array in data) {
-        if([array count] > biggerArray)
-            biggerArray = [array count];
-    }
-    
-    float width = graphView.frame.size.width / biggerArray;
+    float width = graphView.frame.size.width / [data count];
     int currentColor = 0;
+    int colorCounter = 0;
     
-    for (NSArray *percentages in data) {
+    for (int i= 0 ; i < [data count] ; i++) {
         
-        for (int i = 0 ; i < [percentages count] ; i ++) {
+        NSObject *o = [data objectAtIndex:i];
+        
+        if([[o class] isSubclassOfClass:[NSArray class]]){
             
-            float buttonSize = [[percentages objectAtIndex:i] floatValue] * graphView.frame.size.height;
-            UIButton *b = [[UIButton alloc] initWithFrame:CGRectMake(i*width + width*0.1, graphView.frame.size.height - buttonSize, width - width*0.2, buttonSize)];
-            
-            [b addTarget:self action:@selector(didSelectBar:) forControlEvents:UIControlEventTouchUpInside];
-            
-            if (_colors != nil) {
+            for (int j = 0 ; j < [(NSArray *)o count]; j++) {
                 
-                if ([_colors count] == currentColor){
-                    currentColor = 0;
+                NSNumber *percentage = [(NSArray *)o objectAtIndex:j];
+                
+                if([_colors count] > j){
+                    
+                } else {
+                    colorCounter = 0;
                 }
                 
-                [b setBackgroundColor:[_colors objectAtIndex:currentColor]];
+                float buttonSize = [percentage floatValue] * graphView.frame.size.height * multiplier;
                 
+                [self addBar:CGRectMake(i * width + barSpacing, graphView.frame.size.height - buttonSize, width - barSpacing, buttonSize) withColor:[_colors objectAtIndex:colorCounter]];
+                colorCounter++;
                 
-            } else {
-                [b setBackgroundColor:[UIColor blueColor]];
             }
-            
-            [self roundCornersOnView:b onTopLeft:YES topRight:YES bottomLeft:NO bottomRight:NO radius:b.frame.size.width / 4];
-            
-            [graphView addSubview:b];
+            //CGRectMake(i*width + width*0.1, graphView.frame.size.height - buttonSize, width - width*0.2, buttonSize)
+        } else if([[o class] isSubclassOfClass:[NSNumber class]]){
+        
+            float buttonSize = [[data objectAtIndex:i] floatValue] * graphView.frame.size.height * multiplier;
+            [self addBar:CGRectMake(i * width + barSpacing, (graphView.frame.size.height - buttonSize), width - barSpacing, buttonSize) withColor:[_colors objectAtIndex:0]];
+
         }
+        
         
         currentColor++;
         
@@ -169,11 +223,23 @@
     [self animateAllBars];
 }
 
+- (void) addBar:(CGRect) frame withColor:(UIColor *)color{
+    
+    UIButton *b = [[UIButton alloc] initWithFrame:frame];
+    
+    [b addTarget:self action:@selector(didSelectBar:) forControlEvents:UIControlEventTouchUpInside];
+    [b setBackgroundColor:color];
+
+    
+    [self roundCornersOnView:b onTopLeft:YES topRight:YES bottomLeft:NO bottomRight:NO radius:b.frame.size.width / 4];
+    
+    [graphView addSubview:b];
+}
 
 - (void) animateAllBars{
 
+    //This will animate all the bars
     NSMutableArray * sub = [[NSMutableArray alloc] init];
-   // [NSValue valueWithCGRect:CGRectMake(0,0,10,10)]];
     
     for (int i = 0 ; i < [[graphView subviews] count]; i++) {
         

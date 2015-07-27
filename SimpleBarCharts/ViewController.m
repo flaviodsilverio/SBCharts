@@ -16,11 +16,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    SBChart *chart = [[SBChart alloc] initWithFrame:CGRectMake(0, 50, 350, 500) andValues:@[@[@1,@7,@5,@0,@6,@8,@9,@20,@50],@[@3,@5,@8,@25,@3,@4]] andLabels:@[@"1",@"2",@"1",@"2",@"1",@"2",@"7",@"6",@"9"]];
+
+    SBChart *chart = [[SBChart alloc] initWithFrame:CGRectMake(0, 50, 350, 500) andValues:@[@3,@5,@[@1999,@7,@5,@2],@3,@5,@3,@5,@3,@5,@3,@5] andLabels:@[@"1",@"2",@"1",@"2000",@"1",@"2",@"7",@"6",@"90500"]];
     [self.view addSubview:chart];
     [chart setDelegate:self];
-    [chart setColors:@[[UIColor redColor],[UIColor blackColor], [UIColor blackColor]]];
+    [chart setColors:@[[UIColor redColor],[UIColor blackColor], [UIColor blueColor]]];
     [chart drawGraph];
     
     // Do any additional setup after loading the view, typically from a nib.
